@@ -1,0 +1,12 @@
+/home/duck/bakchodi/chatApp/src/main/java/com/example/chatapp/security/JwtAuthenticationFilter.java
+/home/duck/bakchodi/chatApp/src/main/java/com/example/chatapp/controller/HealthController.java
+/home/duck/bakchodi/chatApp/src/main/java/com/example/chatapp/controller/AuthController.java
+/home/duck/bakchodi/chatApp/src/main/java/com/example/chatapp/dto/AuthRequest.java
+/home/duck/bakchodi/chatApp/src/main/java/com/example/chatapp/dto/AuthResponse.java
+/home/duck/bakchodi/chatApp/src/main/java/com/example/chatapp/config/SecurityConfig.java
+/home/duck/bakchodi/chatApp/src/main/java/com/example/chatapp/security/JwtService.java
+/home/duck/bakchodi/chatApp/src/main/java/com/example/chatapp/config/ApplicationConfig.java
+/home/duck/bakchodi/chatApp/src/main/java/com/example/chatapp/service/AuthService.java
+/home/duck/bakchodi/chatApp/src/main/java/com/example/chatapp/ChatAppApplication.java
+/home/duck/bakchodi/chatApp/src/main/java/com/example/chatapp/model/User.java
+/home/duck/bakchodi/chatApp/src/main/java/com/example/chatapp/repository/UserRepository.java
