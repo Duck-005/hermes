@@ -23,6 +23,8 @@ public class Message {
     @Column(nullable = false)
     private String recipient;
 
+    private String roomId;
+
     @Column(nullable = false, length = 1000)
     private String content;
 
