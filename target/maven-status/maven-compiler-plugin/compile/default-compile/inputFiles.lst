@@ -13,8 +13,10 @@
 /home/duck/bakchodi/chatApp/src/main/java/com/example/chatapp/service/AuthService.java
 /home/duck/bakchodi/chatApp/src/main/java/com/example/chatapp/ChatAppApplication.java
 /home/duck/bakchodi/chatApp/src/main/java/com/example/chatapp/repository/ChatRoomRepository.java
+/home/duck/bakchodi/chatApp/src/main/java/com/example/chatapp/controller/HistoryController.java
 /home/duck/bakchodi/chatApp/src/main/java/com/example/chatapp/dto/AuthResponse.java
 /home/duck/bakchodi/chatApp/src/main/java/com/example/chatapp/config/SecurityConfig.java
+/home/duck/bakchodi/chatApp/src/main/java/com/example/chatapp/service/MessageService.java
 /home/duck/bakchodi/chatApp/src/main/java/com/example/chatapp/repository/MessageRepository.java
 /home/duck/bakchodi/chatApp/src/main/java/com/example/chatapp/model/User.java
 /home/duck/bakchodi/chatApp/src/main/java/com/example/chatapp/repository/UserRepository.java
