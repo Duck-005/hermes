@@ -20,4 +20,11 @@ public class MessageService {
     public Page<Message> getRoomMessageHistory(String roomId, Pageable pageable) {
         return repository.findAllByRoomIdOrderByTimestampDesc(roomId, pageable);
     }
+
+    public void updateMessageStatus(Long messageId, Message.MessageStatus status) {
+        repository.findById(messageId).ifPresent(message -> {
+            message.setStatus(status);
+            repository.save(message);
+        });
+    }
 }

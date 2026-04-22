@@ -1,8 +1,10 @@
 package com.example.chatapp.controller;
 
 import com.example.chatapp.dto.ChatMessage;
+import com.example.chatapp.dto.MessageStatusUpdate;
 import com.example.chatapp.model.Message;
 import com.example.chatapp.repository.MessageRepository;
+import com.example.chatapp.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -19,6 +21,7 @@ public class MessageController {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final MessageRepository messageRepository;
+    private final MessageService messageService;
 
     @MessageMapping("/chat.sendMessage")
     @SendTo("/topic/public")
@@ -45,6 +48,18 @@ public class MessageController {
         messagingTemplate.convertAndSend(
                 "/topic/room." + chatMessage.getRoomId(),
                 chatMessage
+        );
+    }
+
+    @MessageMapping("/chat.updateStatus")
+    public void updateMessageStatus(@Payload MessageStatusUpdate statusUpdate) {
+        messageService.updateMessageStatus(statusUpdate.getMessageId(), statusUpdate.getStatus());
+        
+        // Notify the original sender about the status change
+        messagingTemplate.convertAndSendToUser(
+                statusUpdate.getRecipient(), // The original sender
+                "/queue/status",
+                statusUpdate
         );
     }
 

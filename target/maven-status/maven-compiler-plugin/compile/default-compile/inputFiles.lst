@@ -1,5 +1,6 @@
 /home/duck/bakchodi/chatApp/src/main/java/com/example/chatapp/config/WebSocketConfig.java
 /home/duck/bakchodi/chatApp/src/main/java/com/example/chatapp/model/Message.java
+/home/duck/bakchodi/chatApp/src/main/java/com/example/chatapp/dto/MessageStatusUpdate.java
 /home/duck/bakchodi/chatApp/src/main/java/com/example/chatapp/controller/MessageController.java
 /home/duck/bakchodi/chatApp/src/main/java/com/example/chatapp/dto/ChatMessage.java
 /home/duck/bakchodi/chatApp/src/main/java/com/example/chatapp/security/JwtAuthenticationFilter.java
