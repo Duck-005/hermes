@@ -38,6 +38,16 @@ public class MessageController {
         );
     }
 
+    @MessageMapping("/chat.groupMessage")
+    public void sendGroupMessage(@Payload ChatMessage chatMessage) {
+        saveMessage(chatMessage);
+        // broadcast to /topic/room.{roomId}
+        messagingTemplate.convertAndSend(
+                "/topic/room." + chatMessage.getRoomId(),
+                chatMessage
+        );
+    }
+
     @MessageMapping("/chat.addUser")
     @SendTo("/topic/public")
     public ChatMessage addUser(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor) {
@@ -47,11 +57,23 @@ public class MessageController {
         return chatMessage;
     }
 
+    @MessageMapping("/chat.joinRoom")
+    public void joinRoom(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor) {
+        if (headerAccessor.getSessionAttributes() != null) {
+            headerAccessor.getSessionAttributes().put("room_id", chatMessage.getRoomId());
+        }
+        messagingTemplate.convertAndSend(
+                "/topic/room." + chatMessage.getRoomId(),
+                chatMessage // type JOIN expected
+        );
+    }
+
     private void saveMessage(ChatMessage chatMessage) {
         if (chatMessage.getType() == ChatMessage.MessageType.CHAT) {
             Message message = Message.builder()
                     .sender(chatMessage.getSender())
-                    .recipient(chatMessage.getRecipient() != null ? chatMessage.getRecipient() : "PUBLIC")
+                    .recipient(chatMessage.getRecipient() != null ? chatMessage.getRecipient() : "GROUP")
+                    .roomId(chatMessage.getRoomId())
                     .content(chatMessage.getContent())
                     .timestamp(LocalDateTime.now())
                     .status(Message.MessageStatus.SENT)
