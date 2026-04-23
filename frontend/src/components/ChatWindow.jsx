@@ -1,13 +1,40 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { Hash, User, Phone, Video, Pin, Users, Search, Inbox, HelpCircle } from 'lucide-react';
+import React, { useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Hash, User, Phone, Video, Pin, Users, Search, Inbox, HelpCircle, Check, CheckCheck } from 'lucide-react';
 import MessageInput from './MessageInput';
-
 import websocketService from '../services/websocketService';
+import { updateMessageStatus } from '../store/chatSlice';
 
 const ChatWindow = () => {
+    const dispatch = useDispatch();
     const { activeRoom, activePrivateUser, messages } = useSelector((state) => state.chat);
     const { user } = useSelector((state) => state.auth);
+    const messagesEndRef = useRef(null);
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
+
+    // Send Read Receipts
+    useEffect(() => {
+        const unreadMessages = messages.filter(
+            m => m.sender !== user.username && m.status !== 'READ'
+        );
+
+        unreadMessages.forEach(msg => {
+            websocketService.sendMessage('/app/chat.updateStatus', {
+                messageId: msg.id,
+                status: 'READ',
+                recipient: msg.sender // Original sender who should get the update
+            });
+            // Update locally to avoid repeated sends
+            dispatch(updateMessageStatus({ messageId: msg.id, status: 'READ' }));
+        });
+    }, [messages, user.username, dispatch]);
 
     const handleSendMessage = (content) => {
         const chatMessage = {
@@ -86,12 +113,23 @@ const ChatWindow = () => {
                                 <div className="flex items-center gap-2">
                                     <span className="font-semibold text-white hover:underline cursor-pointer">{msg.sender}</span>
                                     <span className="text-xs text-[#b5bac1]">{new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                                    
+                                    {msg.sender === user.username && (
+                                        <div className="ml-1">
+                                            {msg.status === 'READ' ? (
+                                                <CheckCheck size={14} className="text-[#00a8fc]" />
+                                            ) : (
+                                                <Check size={14} className="text-[#b5bac1]" />
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                                 <p className="text-[#dbdee1] leading-snug">{msg.content}</p>
                             </div>
                         </div>
                     ))
                 )}
+                <div ref={messagesEndRef} />
             </div>
 
             {/* Input Footer */}

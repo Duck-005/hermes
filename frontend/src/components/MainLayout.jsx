@@ -40,8 +40,10 @@ const MainLayout = () => {
             });
 
             websocketService.subscribe('/user/queue/status', (status) => {
-                // Handle read receipts
-                console.log('Status update:', status);
+                dispatch(updateMessageStatus({ 
+                    messageId: status.messageId, 
+                    status: status.status 
+                }));
             });
         });
 
