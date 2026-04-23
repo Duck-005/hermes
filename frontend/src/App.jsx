@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import MainLayout from './components/MainLayout';
 
 function App() {
   const { isAuthenticated } = useSelector((state) => state.auth);
@@ -16,7 +17,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route 
             path="/" 
-            element={isAuthenticated ? <div>Chat Interface (Coming Soon)</div> : <Navigate to="/login" />} 
+            element={isAuthenticated ? <MainLayout /> : <Navigate to="/login" />} 
           />
         </Routes>
       </div>
