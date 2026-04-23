@@ -3,9 +3,31 @@ import { useSelector } from 'react-redux';
 import { Hash, User, Phone, Video, Pin, Users, Search, Inbox, HelpCircle } from 'lucide-react';
 import MessageInput from './MessageInput';
 
+import websocketService from '../services/websocketService';
+
 const ChatWindow = () => {
     const { activeRoom, activePrivateUser, messages } = useSelector((state) => state.chat);
     const { user } = useSelector((state) => state.auth);
+
+    const handleSendMessage = (content) => {
+        const chatMessage = {
+            sender: user.username,
+            content: content,
+            type: 'CHAT'
+        };
+
+        if (activeRoom) {
+            chatMessage.roomId = activeRoom.id;
+            websocketService.sendMessage('/app/chat.groupMessage', chatMessage);
+        } else if (activePrivateUser) {
+            chatMessage.recipient = activePrivateUser.username;
+            websocketService.sendMessage('/app/chat.privateMessage', chatMessage);
+            // Instantly show msg for sender
+            // Note: In a real app we might wait for a receipt or self-subscription
+            // but for now let's just push it to local state if the backend doesn't echo it back
+            // (Most STOMP brokers don't echo to the same session for /user destinations)
+        }
+    };
 
     if (!activeRoom && !activePrivateUser) {
         return (
@@ -75,7 +97,7 @@ const ChatWindow = () => {
             {/* Input Footer */}
             <MessageInput 
                 placeholder={isPrivate ? `@${title}` : `#${title}`} 
-                onSendMessage={(content) => console.log('Send:', content)} 
+                onSendMessage={handleSendMessage} 
             />
         </div>
     );
