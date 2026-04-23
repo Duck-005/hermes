@@ -1,4 +1,3 @@
-import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Hash, User, Settings, Plus, LogOut } from 'lucide-react';
 import { setActiveRoom, setActivePrivateUser } from '../store/chatSlice';

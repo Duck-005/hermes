@@ -4,11 +4,11 @@ import Sidebar from './Sidebar';
 import ChatWindow from './ChatWindow';
 import websocketService from '../services/websocketService';
 import api from '../services/api';
-import { setRooms, setOnlineUsers, addMessage, setMessages } from '../store/chatSlice';
+import { setRooms, setOnlineUsers, addMessage, setMessages, updateMessageStatus } from '../store/chatSlice';
 
 const MainLayout = () => {
     const dispatch = useDispatch();
-    const { token, user } = useSelector((state) => state.auth);
+    const { token } = useSelector((state) => state.auth);
     const { activeRoom, activePrivateUser } = useSelector((state) => state.chat);
 
     useEffect(() => {

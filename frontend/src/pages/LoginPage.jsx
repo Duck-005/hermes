@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { setCredentials } from '../store/authSlice';
@@ -19,6 +19,11 @@ const LoginPage = () => {
             dispatch(setCredentials({ user: { username }, token: response.data.token }));
             navigate('/');
         } catch (err) {
+            if (!err.response) {
+                setError('Cannot reach the backend at http://localhost:8080. Start the Spring server and try again.');
+                return;
+            }
+
             setError('Invalid username or password');
         }
     };

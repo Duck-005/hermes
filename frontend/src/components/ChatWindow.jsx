@@ -10,6 +10,7 @@ const ChatWindow = () => {
     const { activeRoom, activePrivateUser, messages } = useSelector((state) => state.chat);
     const { user } = useSelector((state) => state.auth);
     const messagesEndRef = useRef(null);
+    const username = user?.username;
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -21,8 +22,12 @@ const ChatWindow = () => {
 
     // Send Read Receipts
     useEffect(() => {
+        if (!username) {
+            return;
+        }
+
         const unreadMessages = messages.filter(
-            m => m.sender !== user.username && m.status !== 'READ'
+            m => m.sender !== username && m.status !== 'READ'
         );
 
         unreadMessages.forEach(msg => {
@@ -34,11 +39,15 @@ const ChatWindow = () => {
             // Update locally to avoid repeated sends
             dispatch(updateMessageStatus({ messageId: msg.id, status: 'READ' }));
         });
-    }, [messages, user.username, dispatch]);
+    }, [dispatch, messages, username]);
 
     const handleSendMessage = (content) => {
+        if (!username) {
+            return;
+        }
+
         const chatMessage = {
-            sender: user.username,
+            sender: username,
             content: content,
             type: 'CHAT'
         };
@@ -114,7 +123,7 @@ const ChatWindow = () => {
                                     <span className="font-semibold text-white hover:underline cursor-pointer">{msg.sender}</span>
                                     <span className="text-xs text-[#b5bac1]">{new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                                     
-                                    {msg.sender === user.username && (
+                                    {msg.sender === username && (
                                         <div className="ml-1">
                                             {msg.status === 'READ' ? (
                                                 <CheckCheck size={14} className="text-[#00a8fc]" />

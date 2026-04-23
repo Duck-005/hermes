@@ -27,7 +27,7 @@ class WebSocketService {
                 console.error('STOMP Error:', frame.headers['message']);
             },
             debug: (str) => {
-                // console.log(str);
+                console.log(str);
             }
         });
 

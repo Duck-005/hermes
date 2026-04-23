@@ -11,16 +11,14 @@ function App() {
 
   return (
     <Router>
-      <div className="min-h-screen bg-[#313338] text-white">
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route 
-            path="/" 
-            element={isAuthenticated ? <MainLayout /> : <Navigate to="/login" />} 
-          />
-        </Routes>
-      </div>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route 
+          path="/" 
+          element={isAuthenticated ? <MainLayout /> : <Navigate to="/login" />} 
+        />
+      </Routes>
     </Router>
   );
 }
