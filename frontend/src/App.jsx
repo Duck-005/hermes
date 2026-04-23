@@ -2,6 +2,9 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+
 function App() {
   const { isAuthenticated } = useSelector((state) => state.auth);
 
@@ -9,8 +12,8 @@ function App() {
     <Router>
       <div className="min-h-screen bg-[#313338] text-white">
         <Routes>
-          <Route path="/login" element={<div>Login Page (Coming Soon)</div>} />
-          <Route path="/register" element={<div>Register Page (Coming Soon)</div>} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
           <Route 
             path="/" 
             element={isAuthenticated ? <div>Chat Interface (Coming Soon)</div> : <Navigate to="/login" />} 
