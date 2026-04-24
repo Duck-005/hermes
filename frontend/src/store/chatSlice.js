@@ -4,6 +4,7 @@ const chatSlice = createSlice({
   name: 'chat',
   initialState: {
     rooms: [],
+    users: [],
     activeRoom: null,
     activePrivateUser: null,
     messages: [],
@@ -12,6 +13,9 @@ const chatSlice = createSlice({
   reducers: {
     setRooms: (state, action) => {
       state.rooms = action.payload;
+    },
+    setUsers: (state, action) => {
+      state.users = action.payload;
     },
     setActiveRoom: (state, action) => {
       state.activeRoom = action.payload;
@@ -44,6 +48,7 @@ const chatSlice = createSlice({
 
 export const { 
   setRooms, 
+  setUsers,
   setActiveRoom, 
   setActivePrivateUser, 
   setMessages, 

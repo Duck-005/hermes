@@ -26,28 +26,32 @@ public class MessageController {
     @MessageMapping("/chat.sendMessage")
     @SendTo("/topic/public")
     public ChatMessage sendMessage(@Payload ChatMessage chatMessage) {
-        saveMessage(chatMessage);
-        return chatMessage;
+        return saveMessage(chatMessage);
     }
 
     @MessageMapping("/chat.privateMessage")
     public void sendPrivateMessage(@Payload ChatMessage chatMessage) {
-        saveMessage(chatMessage);
+        ChatMessage savedMessage = saveMessage(chatMessage);
         // recipient will receive on /user/<username>/queue/messages
         messagingTemplate.convertAndSendToUser(
-                chatMessage.getRecipient(),
+                savedMessage.getRecipient(),
                 "/queue/messages",
-                chatMessage
+                savedMessage
+        );
+        messagingTemplate.convertAndSendToUser(
+                savedMessage.getSender(),
+                "/queue/messages",
+                savedMessage
         );
     }
 
     @MessageMapping("/chat.groupMessage")
     public void sendGroupMessage(@Payload ChatMessage chatMessage) {
-        saveMessage(chatMessage);
+        ChatMessage savedMessage = saveMessage(chatMessage);
         // broadcast to /topic/room.{roomId}
         messagingTemplate.convertAndSend(
-                "/topic/room." + chatMessage.getRoomId(),
-                chatMessage
+                "/topic/room." + savedMessage.getRoomId(),
+                savedMessage
         );
     }
 
@@ -83,7 +87,7 @@ public class MessageController {
         );
     }
 
-    private void saveMessage(ChatMessage chatMessage) {
+    private ChatMessage saveMessage(ChatMessage chatMessage) {
         if (chatMessage.getType() == ChatMessage.MessageType.CHAT) {
             Message message = Message.builder()
                     .sender(chatMessage.getSender())
@@ -93,7 +97,19 @@ public class MessageController {
                     .timestamp(LocalDateTime.now())
                     .status(Message.MessageStatus.SENT)
                     .build();
-            messageRepository.save(message);
+            Message savedMessage = messageRepository.save(message);
+            return ChatMessage.builder()
+                    .id(savedMessage.getId())
+                    .content(savedMessage.getContent())
+                    .sender(savedMessage.getSender())
+                    .recipient("GROUP".equals(savedMessage.getRecipient()) ? null : savedMessage.getRecipient())
+                    .roomId(savedMessage.getRoomId())
+                    .timestamp(savedMessage.getTimestamp())
+                    .status(savedMessage.getStatus())
+                    .type(chatMessage.getType())
+                    .build();
         }
+
+        return chatMessage;
     }
 }
