@@ -1,2 +1,3 @@
 com/example/chatapp/ChatAppApplication.class
 com/example/chatapp/controller/HealthController.class
+com/example/chatapp/exception/GlobalExceptionHandler.class

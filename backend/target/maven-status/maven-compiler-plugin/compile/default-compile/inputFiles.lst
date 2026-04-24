@@ -3,6 +3,7 @@
 /home/duck/bakchodi/chatApp/backend/src/main/java/com/example/chatapp/repository/MessageRepository.java
 /home/duck/bakchodi/chatApp/backend/src/main/java/com/example/chatapp/dto/AuthResponse.java
 /home/duck/bakchodi/chatApp/backend/src/main/java/com/example/chatapp/security/JwtAuthenticationFilter.java
+/home/duck/bakchodi/chatApp/backend/src/main/java/com/example/chatapp/exception/GlobalExceptionHandler.java
 /home/duck/bakchodi/chatApp/backend/src/main/java/com/example/chatapp/controller/AuthController.java
 /home/duck/bakchodi/chatApp/backend/src/main/java/com/example/chatapp/controller/HistoryController.java
 /home/duck/bakchodi/chatApp/backend/src/main/java/com/example/chatapp/dto/AuthRequest.java
