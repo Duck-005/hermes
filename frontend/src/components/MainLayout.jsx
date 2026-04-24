@@ -16,12 +16,14 @@ const MainLayout = () => {
         // Fetch initial rooms
         const fetchData = async () => {
             try {
-                const [roomsRes, privateChatsRes] = await Promise.all([
+                const [roomsRes, privateChatsRes, presenceRes] = await Promise.all([
                     api.get('/api/v1/rooms'),
                     api.get('/api/v1/messages/private-chats'),
+                    api.get('/api/v1/presence'),
                 ]);
                 dispatch(setRooms(roomsRes.data));
                 dispatch(setPrivateChats(privateChatsRes.data));
+                dispatch(setOnlineUsers(presenceRes.data));
             } catch (err) {
                 console.error('Failed to fetch rooms:', err);
             }
