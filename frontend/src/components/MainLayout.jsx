@@ -4,23 +4,20 @@ import Sidebar from './Sidebar';
 import ChatWindow from './ChatWindow';
 import websocketService from '../services/websocketService';
 import api from '../services/api';
-import { setRooms, setUsers, setOnlineUsers, addMessage, setMessages, updateMessageStatus } from '../store/chatSlice';
+import { setRooms, setOnlineUsers, addMessage, addPrivateChat, setMessages, updateMessageStatus } from '../store/chatSlice';
 
 const MainLayout = () => {
     const dispatch = useDispatch();
     const { token } = useSelector((state) => state.auth);
+    const { user } = useSelector((state) => state.auth);
     const { activeRoom, activePrivateUser } = useSelector((state) => state.chat);
 
     useEffect(() => {
         // Fetch initial rooms
         const fetchData = async () => {
             try {
-                const [roomsRes, usersRes] = await Promise.all([
-                    api.get('/api/v1/rooms'),
-                    api.get('/api/v1/users'),
-                ]);
+                const roomsRes = await api.get('/api/v1/rooms');
                 dispatch(setRooms(roomsRes.data));
-                dispatch(setUsers(usersRes.data));
             } catch (err) {
                 console.error('Failed to fetch rooms:', err);
             }
@@ -40,6 +37,10 @@ const MainLayout = () => {
             });
 
             websocketService.subscribe('/user/queue/messages', (msg) => {
+                const otherUser = msg.sender === user?.username ? msg.recipient : msg.sender;
+                if (otherUser) {
+                    dispatch(addPrivateChat({ username: otherUser }));
+                }
                 dispatch(addMessage(msg));
             });
 
@@ -52,7 +53,7 @@ const MainLayout = () => {
         });
 
         return () => websocketService.disconnect();
-    }, [token, dispatch]);
+    }, [token, user?.username, dispatch]);
 
     // Handle Active Room Subscription
     useEffect(() => {

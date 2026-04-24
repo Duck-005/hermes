@@ -4,7 +4,7 @@ const chatSlice = createSlice({
   name: 'chat',
   initialState: {
     rooms: [],
-    users: [],
+    privateChats: [],
     activeRoom: null,
     activePrivateUser: null,
     messages: [],
@@ -13,9 +13,6 @@ const chatSlice = createSlice({
   reducers: {
     setRooms: (state, action) => {
       state.rooms = action.payload;
-    },
-    setUsers: (state, action) => {
-      state.users = action.payload;
     },
     setActiveRoom: (state, action) => {
       state.activeRoom = action.payload;
@@ -33,6 +30,17 @@ const chatSlice = createSlice({
     addMessage: (state, action) => {
       state.messages.push(action.payload);
     },
+    addPrivateChat: (state, action) => {
+      const username = action.payload?.username;
+      if (!username) {
+        return;
+      }
+
+      const existingChat = state.privateChats.find((chat) => chat.username === username);
+      if (!existingChat) {
+        state.privateChats.push({ username });
+      }
+    },
     setOnlineUsers: (state, action) => {
       state.onlineUsers = action.payload;
     },
@@ -48,11 +56,11 @@ const chatSlice = createSlice({
 
 export const { 
   setRooms, 
-  setUsers,
   setActiveRoom, 
   setActivePrivateUser, 
   setMessages, 
   addMessage, 
+  addPrivateChat,
   setOnlineUsers,
   updateMessageStatus 
 } = chatSlice.actions;

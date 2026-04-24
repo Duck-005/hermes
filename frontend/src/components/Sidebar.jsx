@@ -1,26 +1,60 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Hash, User, Settings, Plus, LogOut, X } from 'lucide-react';
-import { setActiveRoom, setActivePrivateUser } from '../store/chatSlice';
+import api from '../services/api';
+import { addPrivateChat, setActiveRoom, setActivePrivateUser } from '../store/chatSlice';
 import { logout } from '../store/authSlice';
 
 const Sidebar = () => {
     const dispatch = useDispatch();
-    const { rooms, users, onlineUsers, activeRoom, activePrivateUser } = useSelector((state) => state.chat);
+    const { rooms, privateChats, onlineUsers, activeRoom, activePrivateUser } = useSelector((state) => state.chat);
     const { user } = useSelector((state) => state.auth);
     const [isPickerOpen, setIsPickerOpen] = useState(false);
     const [searchValue, setSearchValue] = useState('');
-
-    const dmUsers = users.filter(({ username }) => username !== user?.username);
-    const query = searchValue.trim().toLowerCase();
-    const filteredDmUsers = query
-        ? dmUsers.filter(({ username }) => username.toLowerCase().includes(query))
-        : dmUsers;
+    const [lookupState, setLookupState] = useState({
+        error: '',
+        isLoading: false,
+    });
 
     const handleSelectPrivateUser = (username) => {
+        dispatch(addPrivateChat({ username }));
         dispatch(setActivePrivateUser({ username }));
         setIsPickerOpen(false);
         setSearchValue('');
+        setLookupState({ error: '', isLoading: false });
+    };
+
+    const closePicker = () => {
+        setIsPickerOpen(false);
+        setSearchValue('');
+        setLookupState({ error: '', isLoading: false });
+    };
+
+    const handleLookupUser = async () => {
+        const username = searchValue.trim();
+
+        if (!username) {
+            setLookupState({ error: 'Enter a username.', isLoading: false });
+            return;
+        }
+
+        if (username === user?.username) {
+            setLookupState({ error: 'You cannot message yourself.', isLoading: false });
+            return;
+        }
+
+        setLookupState({ error: '', isLoading: true });
+
+        try {
+            const response = await api.get(`/api/v1/users/${encodeURIComponent(username)}`);
+            handleSelectPrivateUser(response.data.username);
+        } catch (error) {
+            const status = error.response?.status;
+            setLookupState({
+                error: status === 404 ? 'That username does not exist.' : 'Could not look up that username right now.',
+                isLoading: false,
+            });
+        }
     };
 
     return (
@@ -64,7 +98,7 @@ const Sidebar = () => {
                             <Plus size={14} />
                         </button>
                     </div>
-                    {dmUsers.map(({ username }) => (
+                    {privateChats.map(({ username }) => (
                         <div
                             key={username}
                             onClick={() => handleSelectPrivateUser(username)}
@@ -81,8 +115,8 @@ const Sidebar = () => {
                             <span className="text-sm truncate">{username}</span>
                         </div>
                     ))}
-                    {dmUsers.length === 0 && (
-                        <p className="px-2 py-2 text-xs text-[#80848e]">No other users found yet.</p>
+                    {privateChats.length === 0 && (
+                        <p className="px-2 py-2 text-xs text-[#80848e]">No direct messages yet. Use + and enter an exact username.</p>
                     )}
                 </div>
             </div>
@@ -93,14 +127,11 @@ const Sidebar = () => {
                         <div className="flex items-center justify-between border-b border-[#1e1f22] px-4 py-3">
                             <div>
                                 <h2 className="text-sm font-semibold text-white">Start a conversation</h2>
-                                <p className="text-xs text-[#b5bac1]">Choose any registered user.</p>
+                                <p className="text-xs text-[#b5bac1]">Enter the exact username to start a DM.</p>
                             </div>
                             <button
                                 type="button"
-                                onClick={() => {
-                                    setIsPickerOpen(false);
-                                    setSearchValue('');
-                                }}
+                                onClick={closePicker}
                                 className="rounded p-1 text-[#b5bac1] transition-colors hover:bg-[#3f4147] hover:text-white"
                                 aria-label="Close user picker"
                             >
@@ -112,38 +143,32 @@ const Sidebar = () => {
                             <input
                                 type="text"
                                 value={searchValue}
-                                onChange={(event) => setSearchValue(event.target.value)}
-                                placeholder="Search by username"
+                                onChange={(event) => {
+                                    setSearchValue(event.target.value);
+                                    setLookupState({ error: '', isLoading: false });
+                                }}
+                                onKeyDown={(event) => {
+                                    if (event.key === 'Enter') {
+                                        event.preventDefault();
+                                        handleLookupUser();
+                                    }
+                                }}
+                                placeholder="Enter exact username"
                                 className="mb-3 w-full rounded-md border border-[#1e1f22] bg-[#1e1f22] px-3 py-2 text-sm text-white outline-none placeholder:text-[#80848e] focus:border-[#5865f2]"
                             />
 
-                            <div className="max-h-72 overflow-y-auto">
-                                {filteredDmUsers.length === 0 ? (
-                                    <p className="py-6 text-center text-sm text-[#80848e]">No matching users.</p>
-                                ) : (
-                                    filteredDmUsers.map(({ username }) => (
-                                        <button
-                                            key={username}
-                                            type="button"
-                                            onClick={() => handleSelectPrivateUser(username)}
-                                            className="mb-1 flex w-full items-center rounded-md px-3 py-2 text-left text-[#dbdee1] transition-colors hover:bg-[#404249]"
-                                        >
-                                            <div className="relative mr-3">
-                                                <User size={26} className="rounded-full bg-[#4e5058] p-1 text-[#dbdee1]" />
-                                                <div className={`absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-[#313338] ${
-                                                    onlineUsers.includes(username) ? 'bg-[#23a559]' : 'bg-[#80848e]'
-                                                }`}></div>
-                                            </div>
-                                            <div className="min-w-0">
-                                                <div className="truncate text-sm font-medium">{username}</div>
-                                                <div className="text-xs text-[#80848e]">
-                                                    {onlineUsers.includes(username) ? 'Online now' : 'Offline'}
-                                                </div>
-                                            </div>
-                                        </button>
-                                    ))
-                                )}
-                            </div>
+                            <button
+                                type="button"
+                                onClick={handleLookupUser}
+                                disabled={lookupState.isLoading}
+                                className="w-full rounded-md bg-[#5865f2] px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-[#4752c4] disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                                {lookupState.isLoading ? 'Checking username...' : 'Start DM'}
+                            </button>
+
+                            {lookupState.error && (
+                                <p className="mt-3 text-sm text-[#f28b82]">{lookupState.error}</p>
+                            )}
                         </div>
                     </div>
                 </div>
