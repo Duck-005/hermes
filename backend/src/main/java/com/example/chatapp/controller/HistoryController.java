@@ -1,5 +1,6 @@
 package com.example.chatapp.controller;
 
+import com.example.chatapp.dto.PrivateChatSummary;
 import com.example.chatapp.model.Message;
 import com.example.chatapp.service.MessageService;
 import lombok.RequiredArgsConstructor;
@@ -9,12 +10,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/messages")
 @RequiredArgsConstructor
 public class HistoryController {
 
     private final MessageService messageService;
+
+    @GetMapping("/private-chats")
+    public ResponseEntity<List<PrivateChatSummary>> getPrivateChats() {
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        return ResponseEntity.ok(messageService.getPrivateChats(currentUser));
+    }
 
     @GetMapping("/private/{otherUser}")
     public ResponseEntity<Page<Message>> getPrivateHistory(

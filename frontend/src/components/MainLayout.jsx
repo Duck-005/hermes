@@ -4,7 +4,7 @@ import Sidebar from './Sidebar';
 import ChatWindow from './ChatWindow';
 import websocketService from '../services/websocketService';
 import api from '../services/api';
-import { setRooms, setOnlineUsers, addMessage, addPrivateChat, setMessages, updateMessageStatus } from '../store/chatSlice';
+import { setRooms, setPrivateChats, setOnlineUsers, addMessage, addPrivateChat, setMessages, updateMessageStatus } from '../store/chatSlice';
 
 const MainLayout = () => {
     const dispatch = useDispatch();
@@ -16,8 +16,12 @@ const MainLayout = () => {
         // Fetch initial rooms
         const fetchData = async () => {
             try {
-                const roomsRes = await api.get('/api/v1/rooms');
+                const [roomsRes, privateChatsRes] = await Promise.all([
+                    api.get('/api/v1/rooms'),
+                    api.get('/api/v1/messages/private-chats'),
+                ]);
                 dispatch(setRooms(roomsRes.data));
+                dispatch(setPrivateChats(privateChatsRes.data));
             } catch (err) {
                 console.error('Failed to fetch rooms:', err);
             }

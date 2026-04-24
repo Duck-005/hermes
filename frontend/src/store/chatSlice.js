@@ -14,6 +14,9 @@ const chatSlice = createSlice({
     setRooms: (state, action) => {
       state.rooms = action.payload;
     },
+    setPrivateChats: (state, action) => {
+      state.privateChats = action.payload;
+    },
     setActiveRoom: (state, action) => {
       state.activeRoom = action.payload;
       state.activePrivateUser = null;
@@ -36,9 +39,12 @@ const chatSlice = createSlice({
         return;
       }
 
-      const existingChat = state.privateChats.find((chat) => chat.username === username);
-      if (!existingChat) {
-        state.privateChats.push({ username });
+      const existingChatIndex = state.privateChats.findIndex((chat) => chat.username === username);
+      if (existingChatIndex >= 0) {
+        const [existingChat] = state.privateChats.splice(existingChatIndex, 1);
+        state.privateChats.unshift(existingChat);
+      } else {
+        state.privateChats.unshift({ username });
       }
     },
     setOnlineUsers: (state, action) => {
@@ -56,6 +62,7 @@ const chatSlice = createSlice({
 
 export const { 
   setRooms, 
+  setPrivateChats,
   setActiveRoom, 
   setActivePrivateUser, 
   setMessages, 

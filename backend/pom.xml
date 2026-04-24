@@ -6,7 +6,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.2.4</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath/> 
 	</parent>
 	<groupId>com.example</groupId>
 	<artifactId>chat-app</artifactId>
@@ -55,7 +55,6 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- JWT for authentication in Step 2 -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-api</artifactId>
@@ -72,6 +71,13 @@
 			<artifactId>jjwt-jackson</artifactId>
 			<version>0.12.5</version>
 			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+  			<groupId>org.springframework.boot</groupId>
+  			<artifactId>spring-boot-devtools</artifactId>
+  			<scope>runtime</scope>
+  			<optional>true</optional>
 		</dependency>
 	</dependencies>
 
