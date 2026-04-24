@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Hash, User, Phone, Video, Pin, Users, Search, Inbox, HelpCircle, Check, CheckCheck } from 'lucide-react';
 import MessageInput from './MessageInput';
+import UserAvatar from './UserAvatar';
 import websocketService from '../services/websocketService';
 import { updateMessageStatus } from '../store/chatSlice';
 
@@ -116,7 +117,7 @@ const ChatWindow = () => {
                     messages.map((msg, idx) => (
                         <div key={idx} className="flex gap-4 mb-4 group hover:bg-[#2e3035] -mx-4 px-4 py-1">
                             <div className="mt-1">
-                                <User size={40} className="p-2 bg-[#5865f2] rounded-full text-white" />
+                                <UserAvatar username={msg.sender} className="h-10 w-10 text-base" />
                             </div>
                             <div className="flex flex-col">
                                 <div className="flex items-center gap-2">

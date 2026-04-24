@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Hash, User, Settings, Plus, LogOut, X } from 'lucide-react';
 import api from '../services/api';
+import UserAvatar from './UserAvatar';
 import { addPrivateChat, setActiveRoom, setActivePrivateUser } from '../store/chatSlice';
 import { logout } from '../store/authSlice';
 
@@ -107,7 +108,7 @@ const Sidebar = () => {
                             }`}
                         >
                             <div className="relative mr-2.5">
-                                <User size={24} className="p-1 bg-[#4e5058] rounded-full text-[#dbdee1]" />
+                                <UserAvatar username={username} className="h-6 w-6 bg-[#4e5058] text-xs text-[#dbdee1]" />
                                 <div className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-[#2b2d31] ${
                                     onlineUsers.includes(username) ? 'bg-[#23a559]' : 'bg-[#80848e]'
                                 }`}></div>
@@ -178,7 +179,7 @@ const Sidebar = () => {
             <div className="h-14 bg-[#232428] px-2 flex items-center gap-2">
                 <div className="flex-1 flex items-center gap-2 p-1 hover:bg-[#3f4147] rounded cursor-pointer transition-colors group">
                     <div className="relative">
-                        <User size={32} className="p-1.5 bg-[#5865f2] rounded-full text-white" />
+                        <UserAvatar username={user?.username} className="h-8 w-8 text-sm" />
                         <div className="absolute bottom-0 right-0 w-3 h-3 bg-[#23a559] rounded-full border-2 border-[#232428]"></div>
                     </div>
                     <div className="flex flex-col min-w-0">
